@@ -13,27 +13,28 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Component
-public class CsvHistoricRatesProvider implements HistoricRatesProvider{
+public class CsvHistoricRatesProvider implements HistoricRatesProvider {
 
     final Map<LocalDate, Map<String, BigDecimal>> historicRates = new ConcurrentHashMap<>();
 
     @PostConstruct
-    public void init(){
+    public void init() {
         CsvMapper csvMapper = new CsvMapper();
         CsvSchema schema = CsvSchema.emptySchema().withHeader();
 
         try (InputStream csvFile = new ClassPathResource("eurofxref-hist.csv").getInputStream()) {
             MappingIterator<Map<String, String>> mi = csvMapper.readerFor(Map.class)
                     .with(schema).readValues(csvFile);
-            while (mi.hasNext()){
-                Map<String,String> rowAsMap = mi.next();
+            while (mi.hasNext()) {
+                Map<String, String> rowAsMap = mi.next();
                 Map<String, BigDecimal> dateRates = new ConcurrentHashMap<>();
                 LocalDate date = LocalDate.parse(rowAsMap.get("Date"));
                 rowAsMap.remove("Date");
-                for (Map.Entry<String, String> rate : rowAsMap.entrySet()){
-                    if(!rate.getValue().equals("N/A")){
+                for (Map.Entry<String, String> rate : rowAsMap.entrySet()) {
+                    if (!rate.getValue().equals("N/A")) {
                         dateRates.put(rate.getKey(), new BigDecimal(rate.getValue()));
                     }
                 }
@@ -45,7 +46,12 @@ public class CsvHistoricRatesProvider implements HistoricRatesProvider{
     }
 
     @Override
-    public Map<LocalDate, Map<String, BigDecimal>> getHistoricRates() {
-        return this.historicRates;
+    public Map<LocalDate, Map<String, BigDecimal>> getHistoricRates(LocalDate startDate, LocalDate endDate) {
+        LocalDate start = (startDate!= null) ? startDate : LocalDate.of(1999, 1, 4);
+        LocalDate end = (endDate != null) ? endDate : LocalDate.now();
+        return historicRates.entrySet().stream().filter(e ->
+                (e.getKey().isEqual(start) || e.getKey().isAfter(start)) &&
+                        (e.getKey().isEqual(end) || e.getKey().isBefore(end)))
+                    .collect(Collectors.toMap(Map.Entry :: getKey, Map.Entry :: getValue));
     }
 }

@@ -6,5 +6,5 @@ import java.util.Map;
 
 public interface HistoricRatesProvider {
 
-    Map<LocalDate, Map<String, BigDecimal>> getHistoricRates();
+    Map<LocalDate, Map<String, BigDecimal>> getHistoricRates(LocalDate startDate, LocalDate endDate);
 }

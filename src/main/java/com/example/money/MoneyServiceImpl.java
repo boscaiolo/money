@@ -22,7 +22,7 @@ public class MoneyServiceImpl implements MoneyService {
 
     @Override
     public ResponseEntity<Map<String, BigDecimal>> getRatesForDate(LocalDate date) {
-        Map<String, BigDecimal> rates = historicRatesProvider.getHistoricRates().get(date);
+        Map<String, BigDecimal> rates = historicRatesProvider.getHistoricRates(null, null).get(date);
         if(rates == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -31,7 +31,7 @@ public class MoneyServiceImpl implements MoneyService {
 
     @Override
     public ResponseEntity<String> convertCurrencyForDate(LocalDate date, String source, String target, BigDecimal amount) {
-        Map<String, BigDecimal> rates = historicRatesProvider.getHistoricRates().get(date);
+        Map<String, BigDecimal> rates = historicRatesProvider.getHistoricRates(null, null).get(date);
         if(rates == null){
             String error = "Rates for " + date + " do not exist";
             return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
@@ -54,11 +54,17 @@ public class MoneyServiceImpl implements MoneyService {
 
     @Override
     public ResponseEntity<BigDecimal> highestCurrencyRateForDate(LocalDate startDate, LocalDate endDate, String currency) {
+        // TODO : Add a proper error message if the startDate is after the endDate
+        Map<LocalDate, Map<String, BigDecimal>> rates = historicRatesProvider.getHistoricRates(startDate, endDate);
+
         return null;
     }
 
     @Override
     public ResponseEntity<BigDecimal> averageCurrencyRateForDate(LocalDate startDate, LocalDate endDate, String currency) {
+        // TODO : Add a proper error message if the startDate is after the endDate
+        Map<LocalDate, Map<String, BigDecimal>> rates = historicRatesProvider.getHistoricRates(startDate, endDate);
+        
         return null;
     }
 }
