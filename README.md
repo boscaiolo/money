@@ -8,7 +8,7 @@ A sample Spring Boot App which allows to:
   
  ## Currengt limitaions
  
-  The rates are loaded on the startup of the application, for a more robust application this should be done on a daily basis
+  The rates are loaded on the startup of the application, for a more robust solution this should be done on a daily basis with a timed java taskd
  
 ## Source code
 
