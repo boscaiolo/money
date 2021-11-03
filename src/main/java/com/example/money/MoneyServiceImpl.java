@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 public class MoneyServiceImpl implements MoneyService {
 
-    private HistoricRatesProvider historicRatesProvider;
+    private final HistoricRatesProvider historicRatesProvider;
 
     @Autowired
     public MoneyServiceImpl(HistoricRatesProvider historicRatesProvider){
@@ -22,7 +24,7 @@ public class MoneyServiceImpl implements MoneyService {
 
     @Override
     public ResponseEntity<Map<String, BigDecimal>> getRatesForDate(LocalDate date) {
-        Map<String, BigDecimal> rates = historicRatesProvider.getHistoricRates(null, null).get(date);
+        Map<String, BigDecimal> rates = historicRatesProvider.getHistoricRates().get(date);
         if(rates == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -31,7 +33,7 @@ public class MoneyServiceImpl implements MoneyService {
 
     @Override
     public ResponseEntity<String> convertCurrencyForDate(LocalDate date, String source, String target, BigDecimal amount) {
-        Map<String, BigDecimal> rates = historicRatesProvider.getHistoricRates(null, null).get(date);
+        Map<String, BigDecimal> rates = historicRatesProvider.getHistoricRates().get(date);
         if(rates == null){
             String error = "Rates for " + date + " do not exist";
             return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
@@ -53,18 +55,29 @@ public class MoneyServiceImpl implements MoneyService {
     }
 
     @Override
-    public ResponseEntity<BigDecimal> highestCurrencyRateForDate(LocalDate startDate, LocalDate endDate, String currency) {
-        // TODO : Add a proper error message if the startDate is after the endDate
-        Map<LocalDate, Map<String, BigDecimal>> rates = historicRatesProvider.getHistoricRates(startDate, endDate);
-
-        return null;
+    public ResponseEntity<String> highestCurrencyRateForDate(LocalDate startDate, LocalDate endDate, String currency) {
+        if (currency.equals("EUR")) {
+            return new ResponseEntity<>(BigDecimal.ONE.toPlainString(), HttpStatus.OK);
+        }
+        List<BigDecimal> currencyRates = historicRatesProvider.getPeriodHistoricRatesForCurrency(startDate, endDate, currency);
+        if (currencyRates.isEmpty()){
+            String error = "No rates found for currency '" + currency + "' for the period " + startDate + " " + endDate;
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(currencyRates.stream().max(Comparator.naturalOrder()).get().toPlainString(), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<BigDecimal> averageCurrencyRateForDate(LocalDate startDate, LocalDate endDate, String currency) {
-        // TODO : Add a proper error message if the startDate is after the endDate
-        Map<LocalDate, Map<String, BigDecimal>> rates = historicRatesProvider.getHistoricRates(startDate, endDate);
-        
-        return null;
+    public ResponseEntity<String> averageCurrencyRateForDate(LocalDate startDate, LocalDate endDate, String currency) {
+        if (currency.equals("EUR")) {
+            return new ResponseEntity<>(BigDecimal.ONE.toPlainString(), HttpStatus.OK);
+        }
+        List<BigDecimal> currencyRates = historicRatesProvider.getPeriodHistoricRatesForCurrency(startDate, endDate, currency);
+        if (currencyRates.isEmpty()){
+            String error = "No rates found for currency '" + currency + "' for the period " + startDate + " " + endDate;
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(currencyRates.stream().reduce(BigDecimal.ZERO, BigDecimal::add)
+                .divide(new BigDecimal(currencyRates.size()), RoundingMode.HALF_UP).toPlainString(), HttpStatus.OK);
     }
 }

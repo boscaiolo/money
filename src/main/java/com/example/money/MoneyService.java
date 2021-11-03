@@ -27,7 +27,7 @@ public interface MoneyService {
             @RequestParam(name="amount", required=true) BigDecimal amount);
 
     @GetMapping("/highest")
-    ResponseEntity<BigDecimal> highestCurrencyRateForDate(
+    ResponseEntity<String> highestCurrencyRateForDate(
             @RequestParam(name="startDate", required=false, defaultValue="#{T(java.time.LocalDate).of(1999, 1, 4)}")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(name="endDate", required=false, defaultValue="#{T(java.time.LocalDate).now()}")
@@ -35,10 +35,10 @@ public interface MoneyService {
             @RequestParam(name="currency", required=true) String currency);
 
     @GetMapping("/average")
-    ResponseEntity<BigDecimal> averageCurrencyRateForDate(
-            @RequestParam(name="startDate", required=false, defaultValue="#{T(java.time.LocalDateTime).of(1999, 1, 4)}")
+    ResponseEntity<String> averageCurrencyRateForDate(
+            @RequestParam(name="startDate", required=false, defaultValue="#{T(java.time.LocalDate).of(1999, 1, 4)}")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(name="endDate", required=false, defaultValue="#{T(java.time.LocalDateTime).now()}")
+            @RequestParam(name="endDate", required=false, defaultValue="#{T(java.time.LocalDate).now()}")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(name="currency", required=true) String currency);
 }

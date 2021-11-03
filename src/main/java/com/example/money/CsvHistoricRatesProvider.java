@@ -3,6 +3,7 @@ package com.example.money;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import org.apache.tomcat.jni.Local;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -46,12 +49,28 @@ public class CsvHistoricRatesProvider implements HistoricRatesProvider {
     }
 
     @Override
-    public Map<LocalDate, Map<String, BigDecimal>> getHistoricRates(LocalDate startDate, LocalDate endDate) {
+    public Map<LocalDate, Map<String, BigDecimal>> getHistoricRates() {
+        return this.historicRates;
+    }
+
+    @Override
+    public List<BigDecimal> getPeriodHistoricRatesForCurrency(LocalDate startDate, LocalDate endDate, String currency) {
         LocalDate start = (startDate!= null) ? startDate : LocalDate.of(1999, 1, 4);
         LocalDate end = (endDate != null) ? endDate : LocalDate.now();
-        return historicRates.entrySet().stream().filter(e ->
+        Map<LocalDate, Map<String, BigDecimal>> ratesForPeriod = historicRates.entrySet().stream().filter(e ->
                 (e.getKey().isEqual(start) || e.getKey().isAfter(start)) &&
                         (e.getKey().isEqual(end) || e.getKey().isBefore(end)))
                     .collect(Collectors.toMap(Map.Entry :: getKey, Map.Entry :: getValue));
+
+        // TODO : convert this to a lambda
+        List<BigDecimal> currencyRates = new ArrayList<>();
+        for(Map<String, BigDecimal> m : ratesForPeriod.values()){
+            BigDecimal rate = m.get(currency);
+            if(rate != null){
+                currencyRates.add(rate);
+            }
+        }
+
+        return currencyRates;
     }
 }
