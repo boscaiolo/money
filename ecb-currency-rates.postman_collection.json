@@ -1,0 +1,140 @@
+{
+	"info": {
+		"_postman_id": "6b80be17-d45a-424d-96a8-3acf4bbd9247",
+		"name": "ecb-currency-rates",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "highest",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/currency-rates/highest-currency-rate-for-period?currency=USD",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"currency-rates",
+						"highest-currency-rate-for-period"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2021-09-28",
+							"disabled": true
+						},
+						{
+							"key": "endDate",
+							"value": "2021-09-27",
+							"disabled": true
+						},
+						{
+							"key": "currency",
+							"value": "USD"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "rates",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/currency-rates?date=2021-09-28",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"currency-rates"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "2021-09-28"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "convert",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/currency-rates/convert-for-date?date=2021-09-28&source=EUR&target=BGN&amount=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"currency-rates",
+						"convert-for-date"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "2021-09-28"
+						},
+						{
+							"key": "source",
+							"value": "EUR"
+						},
+						{
+							"key": "target",
+							"value": "BGN"
+						},
+						{
+							"key": "amount",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "average",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/currency-rates/average-currency-rate-for-period?currency=USD",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"currency-rates",
+						"average-currency-rate-for-period"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2000-09-25",
+							"disabled": true
+						},
+						{
+							"key": "endDate",
+							"value": "2021-09-28",
+							"disabled": true
+						},
+						{
+							"key": "currency",
+							"value": "USD"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

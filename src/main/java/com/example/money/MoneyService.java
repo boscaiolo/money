@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Map;
 
-@RequestMapping("/ecb-currency-rates")
+@RequestMapping("/currency-rates")
 public interface MoneyService {
 
     @GetMapping
@@ -18,7 +18,7 @@ public interface MoneyService {
             @RequestParam(name="date", required=false, defaultValue="#{T(java.time.LocalDate).now()}")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date);
 
-    @GetMapping("/convert")
+    @GetMapping("/convert-for-date")
     ResponseEntity<String> convertCurrencyForDate(
             @RequestParam(name="date", required=false, defaultValue="#{T(java.time.LocalDate).now()}")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
@@ -26,7 +26,7 @@ public interface MoneyService {
             @RequestParam(name="target", required=true) String target,
             @RequestParam(name="amount", required=true) BigDecimal amount);
 
-    @GetMapping("/highest")
+    @GetMapping("/highest-currency-rate-for-period")
     ResponseEntity<String> highestCurrencyRateForDate(
             @RequestParam(name="startDate", required=false, defaultValue="#{T(java.time.LocalDate).of(1999, 1, 4)}")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -34,7 +34,7 @@ public interface MoneyService {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(name="currency", required=true) String currency);
 
-    @GetMapping("/average")
+    @GetMapping("/average-currency-rate-for-period")
     ResponseEntity<String> averageCurrencyRateForDate(
             @RequestParam(name="startDate", required=false, defaultValue="#{T(java.time.LocalDate).of(1999, 1, 4)}")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
